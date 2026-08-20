@@ -1,0 +1,73 @@
+/* Estilos Customizados para o Plano de Corte */
+
+/* Estilos de Rolagem Suave */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Classes para Destaque Visual */
+.piece-card-hover:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Estilos específicos para Impressão */
+@media print {
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Esconde formulários e botões */
+    header, 
+    footer,
+    form,
+    #board-list,
+    #piece-list,
+    #global-kerf,
+    #global-refilo,
+    #global-corte-cost,
+    #global-fitamento-cost,
+    #btn-calculate,
+    #btn-clear-all,
+    #btn-load-demo,
+    .lg:col-span-5,
+    #sheet-visual-select,
+    .flex-wrap {
+        display: none !important;
+    }
+
+    /* Expande os resultados e visualização para largura total */
+    .lg:col-span-7 {
+        grid-column: span 12 / span 12 !important;
+        width: 100% !important;
+    }
+
+    /* Mostrar todos os resultados */
+    #results-panel,
+    #visualization-panel {
+        display: block !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-bottom: 2rem !important;
+    }
+
+    #cutting-canvas {
+        border: 1px solid black !important;
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid;
+    }
+}

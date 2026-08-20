@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corte Custo - Plano de Corte & Custos MDF</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-scissors text-2xl text-yellow-300"></i>
+                <h1 class="text-xl font-bold tracking-tight">Corte Custo - Otimizador de Corte e Custos MDF</h1>
+            </div>
+            <p class="text-xs sm:text-sm text-indigo-100 font-medium">Plano de corte guilhotina 2D e cálculo financeiro preciso</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- COLUNA ESQUERDA: Cadastro e Configurações (5 colunas) -->
+        <div class="lg:col-span-5 space-y-6">
+
+            <!-- Painel 1: Configurações Globais -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <div class="flex items-center gap-2 mb-4 text-indigo-600">
+                    <i class="fa-solid fa-gears text-lg"></i>
+                    <h2 class="text-lg font-bold">1. Parâmetros Globais</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                            Serra (Kerf) <span class="text-gray-400 font-normal">(mm)</span>
+                        </label>
+                        <input type="number" id="global-kerf" value="3" min="0" step="0.5" 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                            Refilo das Bordas <span class="text-gray-400 font-normal">(mm)</span>
+                        </label>
+                        <input type="number" id="global-refilo" value="10" min="0" step="1" 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                            Valor do Corte <span class="text-gray-400 font-normal">(R$ / corte)</span>
+                        </label>
+                        <input type="number" id="global-corte-cost" value="2.00" min="0" step="0.1" 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                            Fitamento <span class="text-gray-400 font-normal">(R$ / metro)</span>
+                        </label>
+                        <input type="number" id="global-fitamento-cost" value="4.50" min="0" step="0.1" 
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel 2: Tipos de Chapas -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <div class="flex items-center justify-between mb-4 text-indigo-600">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-lg"></i>
+                        <h2 class="text-lg font-bold">2. Chapas de MDF</h2>
+                    </div>
+                    <span id="board-count-badge" class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">0</span>
+                </div>
+
+                <!-- Formulário Cadastro Chapa -->
+                <form id="board-form" class="space-y-3 mb-4 bg-gray-50 p-3.5 rounded-lg border border-gray-100">
+                    <div class="grid grid-cols-1 gap-2">
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Descrição da Chapa</label>
+                        <input type="text" id="board-desc" placeholder="Ex: MDF Branco TX 15mm" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Compr. <span class="text-gray-400 font-normal">(mm)</span></label>
+                            <input type="number" id="board-w" placeholder="2750" required min="10"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Larg. <span class="text-gray-400 font-normal">(mm)</span></label>
+                            <input type="number" id="board-h" placeholder="1840" required min="10"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Espess. <span class="text-gray-400 font-normal">(mm)</span></label>
+                            <input type="number" id="board-thickness" placeholder="15" required min="1"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Valor <span class="text-gray-400 font-normal">(R$)</span></label>
+                            <input type="number" id="board-cost" placeholder="230.00" required min="0" step="0.01"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Adicionar Chapa
+                    </button>
+                </form>
+
+                <!-- Lista de Chapas -->
+                <div class="overflow-y-auto max-h-48 border border-gray-100 rounded-lg divide-y divide-gray-100" id="board-list">
+                    <!-- Dinâmico -->
+                </div>
+            </div>
+
+            <!-- Painel 3: Peças -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <div class="flex items-center justify-between mb-4 text-indigo-600">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-puzzle-piece text-lg"></i>
+                        <h2 class="text-lg font-bold">3. Peças para Cortar</h2>
+                    </div>
+                    <span id="piece-count-badge" class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">0</span>
+                </div>
+
+                <!-- Formulário Cadastro Peça -->
+                <form id="piece-form" class="space-y-3 mb-4 bg-gray-50 p-3.5 rounded-lg border border-gray-100">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Chapa Relacionada</label>
+                            <select id="piece-board-select" required
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled selected>Selecione a chapa...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Descrição / Identificação</label>
+                            <input type="text" id="piece-desc" placeholder="Ex: Lateral Balcão" required
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Qtd</label>
+                            <input type="number" id="piece-qty" value="1" required min="1"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Compr. <span class="text-gray-400 font-normal">(mm)</span></label>
+                            <input type="number" id="piece-w" placeholder="700" required min="5"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Larg. <span class="text-gray-400 font-normal">(mm)</span></label>
+                            <input type="number" id="piece-h" placeholder="500" required min="5"
+                                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <!-- Configurações adicionais de Peça -->
+                    <div class="bg-white p-2.5 rounded-lg border border-gray-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-gray-600 uppercase">Bordas com Fitamento:</span>
+                            <label class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer font-medium">
+                                <input type="checkbox" id="piece-allow-rotation" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5">
+                                Permitir Rotacionar
+                            </label>
+                        </div>
+                        
+                        <!-- Lados do fitamento -->
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="space-y-1">
+                                <span class="text-[10px] text-gray-400 font-bold block">COMPRIMENTOS</span>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="checkbox" id="fit-c1" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5">
+                                    Comprimento 1
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="checkbox" id="fit-c2" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5">
+                                    Comprimento 2
+                                </label>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] text-gray-400 font-bold block">LARGURAS</span>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="checkbox" id="fit-l1" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5">
+                                    Largura 1
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="checkbox" id="fit-l2" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5">
+                                    Largura 2
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Adicionar Peça
+                    </button>
+                </form>
+
+                <!-- Lista de Peças -->
+                <div class="overflow-y-auto max-h-56 border border-gray-100 rounded-lg divide-y divide-gray-100" id="piece-list">
+                    <!-- Dinâmico -->
+                </div>
+            </div>
+
+            <!-- Dados de Teste Rápidos -->
+            <div class="flex justify-between items-center text-xs text-gray-500">
+                <span>Deseja testar rapidamente?</span>
+                <button type="button" id="btn-load-demo" class="text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-1">
+                    <i class="fa-solid fa-magic"></i> Carregar Dados Demo
+                </button>
+            </div>
+        </div>
+
+        <!-- COLUNA DIREITA: Resultados, Relatórios e Visualização (7 colunas) -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Botão Calcular -->
+            <div class="flex items-center gap-4">
+                <button id="btn-calculate" class="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-calculator text-2xl"></i> Calcular Plano de Corte e Custos
+                </button>
+                <button id="btn-clear-all" title="Limpar Tudo" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold p-4 rounded-xl shadow-sm transition-colors">
+                    <i class="fa-solid fa-trash-can text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Painel 4: Resumo Financeiro / Relatórios (Inicialmente oculto ou vazio) -->
+            <div id="results-panel" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-6">
+                
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i>
+                        Resultados do Projeto
+                    </h2>
+                    
+                    <!-- Grid de Kpis -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-lg text-center">
+                            <span class="block text-[10px] text-indigo-700 uppercase font-bold">Chapas Usadas</span>
+                            <span id="kpi-sheets-qty" class="text-2xl font-black text-indigo-900">-</span>
+                        </div>
+                        <div class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-lg text-center">
+                            <span class="block text-[10px] text-indigo-700 uppercase font-bold">Cortes Realizados</span>
+                            <span id="kpi-cuts-qty" class="text-2xl font-black text-indigo-900">-</span>
+                        </div>
+                        <div class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-lg text-center">
+                            <span class="block text-[10px] text-indigo-700 uppercase font-bold">Total Fitamento</span>
+                            <span id="kpi-fitamento-len" class="text-xl font-black text-indigo-900">-</span>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-3.5 rounded-lg text-center">
+                            <span class="block text-[10px] text-emerald-700 uppercase font-bold">Valor do Projeto</span>
+                            <span id="kpi-total-price" class="text-xl font-black text-emerald-900">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalhamento de Custos -->
+                <div class="border-t border-gray-100 pt-4 space-y-2">
+                    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Detalhamento dos Custos</h3>
+                    <div class="divide-y divide-gray-100">
+                        <div class="flex justify-between py-2 text-sm text-gray-600">
+                            <span>MDF (Chapas)</span>
+                            <span id="cost-detail-sheets" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between py-2 text-sm text-gray-600">
+                            <span>Serviço de Corte</span>
+                            <span id="cost-detail-cuts" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between py-2 text-sm text-gray-600">
+                            <span>Serviço de Fitamento</span>
+                            <span id="cost-detail-fitamento" class="font-semibold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between py-2.5 text-base text-gray-800 font-bold">
+                            <span>Custo Total Estimado</span>
+                            <span id="cost-detail-total" class="text-emerald-700">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação de Exportação -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
+                    <button id="btn-export-csv" class="flex-grow bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2.5 px-4 rounded-lg border border-indigo-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-excel text-lg"></i> Exportar Dados (Excel/CSV)
+                    </button>
+                    <button id="btn-print-report" class="bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-2.5 px-4 rounded-lg border border-gray-300 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print text-lg"></i> Imprimir Relatório
+                    </button>
+                </div>
+
+
+                <!-- Peças não posicionadas (se houver) -->
+                <div id="unfittable-container" class="hidden bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-4 text-sm space-y-1">
+                    <div class="flex items-center gap-2 font-bold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Peças que não couberam nas chapas:</span>
+                    </div>
+                    <ul id="unfittable-list" class="list-disc pl-5 font-medium">
+                        <!-- Dinâmico -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Painel 5: Layout Visual do Plano de Corte -->
+            <div id="visualization-panel" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-shapes text-indigo-600"></i>
+                        Esquema de Corte Visual
+                    </h2>
+                    <!-- Seletor de Chapa para Visualizar se houver várias -->
+                    <div class="flex flex-wrap items-center gap-2 text-sm justify-end">
+                        <span class="text-gray-500">Visualizar Chapa:</span>
+                        <select id="sheet-visual-select" class="border border-gray-300 rounded px-2 py-1 font-semibold focus:outline-none bg-white">
+                            <!-- Dinâmico -->
+                        </select>
+                        <button id="btn-download-image" title="Baixar Imagem do Plano de Corte" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-2.5 py-1 rounded border border-gray-300 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-download"></i> Baixar Imagem
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Legenda do canvas -->
+                <div class="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 border-t border-b border-gray-100 py-2.5">
+                    <div class="flex items-center gap-1.5">
+                        <span class="inline-block w-4 h-3 bg-indigo-100 border border-indigo-400 rounded"></span>
+                        <span>Peça posicionada</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="inline-block w-4 h-3 bg-red-400 rounded"></span>
+                        <span>Borda com Fitamento</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="inline-block w-4 h-0.5 bg-dashed bg-gray-400 border-t border-dashed border-gray-600"></span>
+                        <span>Linha de Corte</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="inline-block w-4 h-3 bg-amber-100 border border-amber-300 rounded"></span>
+                        <span>Refilo / Sobra</span>
+                    </div>
+                </div>
+
+                <!-- O Canvas -->
+                <div class="relative bg-gray-100 rounded-lg p-2 flex items-center justify-center min-h-[300px] border border-gray-200">
+                    <canvas id="cutting-canvas" class="max-w-full bg-white shadow-sm border border-gray-300 cursor-crosshair"></canvas>
+                </div>
+
+                <!-- Detalhes da chapa selecionada -->
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 text-xs sm:text-sm space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Aproveitamento da Chapa:</span>
+                        <span id="visual-sheet-yield" class="font-bold text-gray-800">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Quantidade de Peças nesta Chapa:</span>
+                        <span id="visual-sheet-pieces-count" class="font-bold text-gray-800">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Cortes nesta Chapa:</span>
+                        <span id="visual-sheet-cuts-count" class="font-bold text-gray-800">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel se vazio -->
+            <div id="empty-results-panel" class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                    <i class="fa-solid fa-paste"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-700 mb-1">Aguardando dados para calcular</h3>
+                <p class="text-sm text-gray-400 max-w-sm">Cadastre seus tipos de chapas MDF, as peças de corte e clique em <strong>"Calcular Plano de Corte"</strong> para visualizar os resultados.</p>
+            </div>
+            
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 text-center py-4 px-6 text-xs sm:text-sm border-t border-gray-700 mt-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>&copy; 2026 - Corte Custo - Otimizador de MDF</span>
+            <span class="text-gray-500">Desenvolvido com JavaScript puro, HTML5 e CSS3</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="cutting-optimizer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
